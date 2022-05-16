@@ -1,7 +1,7 @@
 // Variables y Selectores
 const formulario = document.querySelector('#agregar-gasto')
 const gastoListado = document.querySelector('#gastos ul')
-
+let presupuesto
 
 
 
@@ -13,6 +13,11 @@ function eventListeners() {
 
 
 // Classes
+class Presupuesto {
+    constructor(presupuesto) {
+        this.presupuesto = presupuesto
+    }
+}
 
 
 
@@ -24,7 +29,10 @@ function preguntarPresupuesto() {
 
     if(!presupuestoUsuario || isNaN(presupuestoUsuario) || presupuestoUsuario<0) {
         window.location.reload()
-    } else {
-        console.log(presupuestoUsuario)
     }
+
+
+    // Presupuesto valido
+    presupuesto = new Presupuesto(presupuestoUsuario)
+    console.log(presupuesto)
 }
