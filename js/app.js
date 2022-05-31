@@ -8,50 +8,55 @@ let presupuesto
 // Eventos
 eventListeners()
 function eventListeners() {
-   document.addEventListener('DOMContentLoaded', preguntarPresupuesto) 
+  document.addEventListener('DOMContentLoaded', preguntarPresupuesto)
 
-   formulario.addEventListener('submit', agregarGasto)
+  formulario.addEventListener('submit', agregarGasto)
 }
 
 
 // Classes
 class Presupuesto {
-    constructor(presupuesto) {
-        this.presupuesto = presupuesto
-        this.restante = presupuesto
-        this.gastos = []
-    }
+  constructor(presupuesto) {
+    this.presupuesto = presupuesto
+    this.restante = presupuesto
+    this.gastos = []
+  }
+
+  nuevoGasto(gasto) {
+    this.gastos = [...this.gastos, gasto]
+    console.log(this.gastos);
+  }
 }
 
 
 class UI {
-    insertarPresupuesto( cantidad ) {
-        const { presupuesto, restante } = cantidad
-        document.querySelector('#total').textContent = presupuesto
-        document.querySelector('#restante').textContent = restante
+  insertarPresupuesto(cantidad) {
+    const { presupuesto, restante } = cantidad
+    document.querySelector('#total').textContent = presupuesto
+    document.querySelector('#restante').textContent = restante
+  }
+  imprimirAlerta(mensaje, tipo) {
+    // Crear el div
+    const divMensaje = document.createElement('div')
+    divMensaje.classList.add('text-center', 'alert')
+
+    if (tipo == 'error') {
+      divMensaje.classList.add('alert-danger')
+    } else {
+      divMensaje.classList.add('alert-success')
     }
-    imprimirAlerta(mensaje , tipo) {
-        // Crear el div
-        const divMensaje = document.createElement('div')
-        divMensaje.classList.add('text-center', 'alert')
 
-        if(tipo == 'error') {
-            divMensaje.classList.add('alert-danger')
-        } else {
-            divMensaje.classList.add('alert-success')
-        }
+    // Mensaje de error
+    divMensaje.textContent = mensaje
 
-        // Mensaje de error
-        divMensaje.textContent = mensaje
+    // Insertar en el HTML
+    document.querySelector('.primario').insertBefore(divMensaje, formulario)
 
-        // Insertar en el HTML
-        document.querySelector('.primario').insertBefore( divMensaje, formulario )
-
-        // Quitar del HTML
-        setTimeout(() => {
-            divMensaje.remove()
-        }, 3000)
-    }
+    // Quitar del HTML
+    setTimeout(() => {
+      divMensaje.remove()
+    }, 3000)
+  }
 }
 
 // Instanciar
@@ -60,40 +65,50 @@ const ui = new UI()
 
 // Funciones
 function preguntarPresupuesto() {
-    const presupuestoUsuario = Number(prompt('¿Cual es tu presupuesto?'))
+  const presupuestoUsuario = Number(prompt('¿Cual es tu presupuesto?'))
 
 
-    if(!presupuestoUsuario || isNaN(presupuestoUsuario) || presupuestoUsuario<0) {
-        window.location.reload()
-    }
+  if (!presupuestoUsuario || isNaN(presupuestoUsuario) || presupuestoUsuario < 0) {
+    window.location.reload()
+  }
 
 
-    // Presupuesto valido
-    presupuesto = new Presupuesto(presupuestoUsuario)
-    console.log(presupuesto)
+  // Presupuesto valido
+  presupuesto = new Presupuesto(presupuestoUsuario)
 
 
-    ui.insertarPresupuesto(presupuesto)
+  ui.insertarPresupuesto(presupuesto)
 }
 
 // Añade gastos
 function agregarGasto(e) {
-    e.preventDefault()
+  e.preventDefault()
 
 
-    // Leer los datos del formulario
-    const nombre = document.querySelector('#gasto').value
-    const cantidad = document.querySelector('#cantidad').value
+  // Leer los datos del formulario
+  const nombre = document.querySelector('#gasto').value
+  const cantidad = Number(document.querySelector('#cantidad').value)
 
 
-    // Validar
-    if(!nombre || !cantidad) {
-        ui.imprimirAlerta('Ambos campos son obligatorios', 'error')    
-        return
-    } else if(cantidad <= 0 || isNaN(cantidad)) {
-        ui.imprimirAlerta('Cantidad no válida', 'error')
-        return
-    }
+  // Validar
+  if (!nombre || !cantidad) {
+    ui.imprimirAlerta('Ambos campos son obligatorios', 'error')
+    return
+  } else if (cantidad <= 0 || isNaN(cantidad)) {
+    ui.imprimirAlerta('Cantidad no válida', 'error')
+    return
+  }
 
+  // Generar un objeto con el gasto
+  const gasto = { nombre, cantidad, id: Date.now() }
+
+
+  // Añadiendo nuevo gasto
+  presupuesto.nuevoGasto(gasto)
+
+  ui.imprimirAlerta('Gasto agregado correctamente')
+
+  // Renicio del formulario
+  formulario.reset()
 }
 
