@@ -24,7 +24,6 @@ class Presupuesto {
 
   nuevoGasto(gasto) {
     this.gastos = [...this.gastos, gasto]
-    console.log(this.gastos);
   }
 }
 
@@ -56,6 +55,38 @@ class UI {
     setTimeout(() => {
       divMensaje.remove()
     }, 3000)
+  }
+
+  agregarGastoListado(gastos) {
+    // Limpiar HTML previo
+    this.limpiarHTML()
+
+    gastos.forEach(gasto => {
+      const { cantidad, nombre, id } = gasto;
+
+      // Crear li
+      const nuevoGasto = document.createElement('li')
+      nuevoGasto.className = 'list-group-item d-flex justify-content-between align-items-center'
+      nuevoGasto.dataset.id = id
+
+      // Agregar el HTML del gasto
+      nuevoGasto.innerHTML = `${nombre} <span class="badge badge-primary badge-pill"> ${cantidad} </span>`
+
+      // Boton para borrar el gasto
+      const btnBorrar = document.createElement('button')
+      btnBorrar.classList.add('btn', 'btn-danger', 'borrar-gasto')
+      btnBorrar.textContent = 'Eliminar'
+      nuevoGasto.appendChild(btnBorrar)
+
+      // Agregar al HTML
+      gastoListado.appendChild(nuevoGasto)
+    })
+  }
+
+  limpiarHTML() {
+    while (gastoListado.firstChild) {
+      gastoListado.removeChild(gastoListado.firstChild)
+    }
   }
 }
 
@@ -106,7 +137,13 @@ function agregarGasto(e) {
   // Añadiendo nuevo gasto
   presupuesto.nuevoGasto(gasto)
 
+  // Mensaje de proceso exitoso
   ui.imprimirAlerta('Gasto agregado correctamente')
+
+
+  // Imprimir los gastos
+  const { gastos } = presupuesto
+  ui.agregarGastoListado(gastos)
 
   // Renicio del formulario
   formulario.reset()
